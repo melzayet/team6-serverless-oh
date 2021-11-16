@@ -14,18 +14,22 @@ namespace IceCream.Rating
     public static class CreateRating
     {
         [FunctionName("CreateRating")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+        public static async  Task<IActionResult> Run(
+        
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [CosmosDB(
+                databaseName: "BFYOC_Datastore",
+                collectionName: "Ratings",
+                ConnectionStringSetting = "CosmosDBSetting")] IAsyncCollector<object> ratings,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
-
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            
+            string requestBody = new StreamReader(req.Body).ReadToEnd();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             string userId = "cc20a6fb-a91f-4192-874d-132493685376" ?? data?.userId;
             string productId = "75542e38-563f-436f-adeb-f426f1dabb5c" ?? data?.productId;
-            string rating = "75542e38-563f-436f-adeb-f426f1dabb5c" ?? data?.rating;
+            int rating = data?.rating;
             string responseString = "success";
 
             //validate user
@@ -41,8 +45,20 @@ namespace IceCream.Rating
             Trace.WriteLine(productCheckResult);
 
              //validate raring    (need check if it's a number)
-            if(Int32.Parse(rating) < 0 || Int32.Parse(rating) > 5)  responseString = "invalid rating";
+            if(rating < 0 || rating > 5)  responseString = "invalid rating";
             Trace.WriteLine(userCheckResult); 
+
+            var ratingObject = new dto.Rating
+                {
+                    id = Guid.NewGuid().ToString(),
+                    rating = rating,
+                    userId = userId,
+                    productId = productId,
+                    locationName = data?.locationName,
+                    userNotes = data?.userNotes
+                };
+
+            await ratings.AddAsync(ratingObject);
 
             return new OkObjectResult(responseString);
         }
