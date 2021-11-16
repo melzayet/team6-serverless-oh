@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 namespace dto {
 public class Rating
 {
-  
+
     [JsonProperty("id")]
     public string id { get; set; }
 
