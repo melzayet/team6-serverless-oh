@@ -27,14 +27,14 @@ namespace IceCream.Rating
                 PartitionKey = "{Query.productId}")] dto.Rating rating,
             ILogger log)
         {
-        
+
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            if(rating == null) 
+            if(rating == null)
                 return new NotFoundObjectResult("rating does not exist");
             else return new OkObjectResult(rating);
-        
-            
+
+
         }
     }
 }
