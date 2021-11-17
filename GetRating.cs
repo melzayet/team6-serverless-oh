@@ -23,7 +23,7 @@ namespace IceCream.Rating
                 databaseName: "BFYOC_Datastore",
                 collectionName: "Ratings",
                 ConnectionStringSetting = "CosmosDBSetting",
-                Id = "{Query.ratingId}"] dto.Rating rating,
+                Id = "{Query.ratingId}")] dto.Rating rating,
             ILogger log)
         {
 
