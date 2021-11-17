@@ -59,8 +59,11 @@ namespace IceCream.Rating
 
             await ratings.AddAsync(ratingObject);
 
+            if(responseString.Contains("invalid"))
+                return new NotFoundObjectResult(responseString);
+            else return new OkObjectResult(JsonConvert.SerializeObject(ratingObject));
+            
           
-           return new OkObjectResult(JsonConvert.SerializeObject(ratingObject));
         }
     }
 }
