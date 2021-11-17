@@ -17,13 +17,13 @@ namespace IceCream.Rating
     {
         [FunctionName("GetRating")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "GetRating/ratingId/{ratingId}")]
                 HttpRequest req,
             [CosmosDB(
                 databaseName: "BFYOC_Datastore",
                 collectionName: "Ratings",
                 ConnectionStringSetting = "CosmosDBSetting",
-                SqlQuery = "SELECT * FROM c WHERE c.id = {Query.ratingId}")] dto.Rating rating,
+                SqlQuery = "SELECT * FROM c WHERE c.id = {ratingId}")] dto.Rating rating,
             ILogger log)
         {
 
