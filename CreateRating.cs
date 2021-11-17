@@ -27,26 +27,24 @@ namespace IceCream.Rating
             
             string requestBody = new StreamReader(req.Body).ReadToEnd();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            string userId = "cc20a6fb-a91f-4192-874d-132493685376" ?? data?.userId;
-            string productId = "75542e38-563f-436f-adeb-f426f1dabb5c" ?? data?.productId;
+            string userId = data?.userId;
+            string productId =  data?.productId;
             int rating = data?.rating;
-            string responseString = "success";
+            string responseString = "";
 
             //validate user
             string userCheckResult = await GetUserClient.GetUser(userId);
-            dynamic userObject = JsonConvert.DeserializeObject(userCheckResult);
-            if(userObject?.userId != userId)  responseString = "invalid user Id";
-            Trace.WriteLine(userCheckResult);            
-
+            if(userCheckResult == "failed") responseString = "invalid user Id";
+            
             //validate product
             string productCheckResult = await GetProductClient.GetProduct(productId);
-            dynamic productObject = JsonConvert.DeserializeObject(productCheckResult);
-            if(productObject?.productId != productId)  responseString = "invalid product Id";
-            Trace.WriteLine(productCheckResult);
+           if(productCheckResult == "failed") responseString = "invalid product Id";
 
              //validate raring    (need check if it's a number)
             if(rating < 0 || rating > 5)  responseString = "invalid rating";
             Trace.WriteLine(userCheckResult); 
+
+            if (responseString != string.Empty) return new OkObjectResult(responseString);
 
             var ratingObject = new dto.Rating
                 {
@@ -55,12 +53,14 @@ namespace IceCream.Rating
                     userId = userId,
                     productId = productId,
                     locationName = data?.locationName,
-                    userNotes = data?.userNotes
+                    userNotes = data?.userNotes,
+                    timestamp = DateTime.UtcNow.ToString()
                 };
 
             await ratings.AddAsync(ratingObject);
 
-            return new OkObjectResult(responseString);
+          
+           return new OkObjectResult(JsonConvert.SerializeObject(ratingObject));
         }
     }
 }
