@@ -37,7 +37,7 @@ namespace IceCream.Rating
                 }
             else 
                 {                 
-                    return new OkObjectResult(ratings);
+                    return new OkObjectResult(ratings.First<object>());
                 }
 
 
